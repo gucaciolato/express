@@ -17,10 +17,6 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  res.render('home');
-});
-
 app.post('/books/insertbook', (req, res) => {
   const title = req.body.title;
   const author = req.body.author;
@@ -33,10 +29,27 @@ app.post('/books/insertbook', (req, res) => {
   conn.query(sql, (err) => {
     if (err) {
       console.log(err);
+      return;
     }
-    res.redirect('/');
+    res.redirect('/books');
     console.log('Book inserted');
   });
+});
+
+app.get('/books', (req, res) => {
+  const sql = 'SELECT * FROM books';
+  conn.query(sql, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+    const books = data;
+    res.render('books', { books });
+    console.log(books);
+  });
+});
+
+app.get('/', (req, res) => {
+  res.render('home');
 });
 
 const conn = mysql.createConnection({
